@@ -22,9 +22,7 @@ def _extract_text(fpath):
     img = cv2.imread(fpath)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-    text = pytesseract.image_to_string(Image.open(fpath), lang='vie')
-    # print("===== Extracted text =====")
-    # print(text)
+    text = pytesseract.image_to_string(gray, lang='vie')
     return text
 
 def _extract_details(context):
