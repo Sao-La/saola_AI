@@ -4,3 +4,4 @@ transformers==4.11.3
 vncorenlp
 pylcs
 phonenumbers
+dateparser

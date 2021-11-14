@@ -20,7 +20,7 @@ template_questions = {
     "product_name": "Sản phẩm được rao bán là gì?",
     "usage": "Mục đích sử dụng?",
     "quantity": "Số lượng sản phẩm được rao bán?",
-    "post_date": "Thời gian rao bán?",
+    "date": "Thời gian rao bán?",
     "location": "Địa điểm rao bán?",
     "phone": "Số điện thoại người bán?",
 }
@@ -42,7 +42,6 @@ def _extract_text_with_url(url: str):
     # correction
     lines = [utils.correct(x) for x in text.split("\n") if len(x.strip()) > 0]
     return " \n ".join(lines)
-
 
 def _extract_text(fpath: str):
     img = cv2.imread(fpath)
@@ -68,6 +67,8 @@ def _extract_details(context: str):
             details[qid]["answer"] = utils.match_animal(details[qid]["answer"])
         elif qid == "phone":
             details[qid]["answer"] = utils.parse_phone(details[qid]["answer"])
+        elif qid == "date":
+            details[qid]["answer"] = utils.parse_date(details[qid]["answer"])
     return details
 
 def extract_info(fpath: str):
