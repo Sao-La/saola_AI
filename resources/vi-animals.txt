@@ -150,6 +150,8 @@ Cóc mày phê
 Sóc rừng
 Cóc rừng
 Cóc tía
+Mèo đen
+Rắn
 Nhím
 Công
 Công lục Java
@@ -252,6 +254,7 @@ Kim oanh
 Kim oanh mỏ đỏ
 Kim oanh tai bạc
 Kền kền
+Cọp
 Kỳ đà
 Kỳ đà hoa
 Kỳ đà vân

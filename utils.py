@@ -1,6 +1,7 @@
 import difflib
 import pylcs
 import phonenumbers
+import dateparser
 from vncorenlp import VnCoreNLP
 
 segmenter = VnCoreNLP("./resources/vncorenlp/VnCoreNLP-1.1.1.jar", annotators="wseg", max_heap_size='-Xmx500m') 
@@ -49,3 +50,10 @@ def parse_phone(text: str):
     for match in phonenumbers.PhoneNumberMatcher(text, "VN"):
         res.append(phonenumbers.format_number(match.number, phonenumbers.PhoneNumberFormat.E164))
     return res
+
+def parse_date(text: str):
+    date = dateparser.parse(
+        text, languages=["vi", "fr", "en"], 
+        settings={"TIMEZONE": "Asia/Ho_Chi_Minh", "PREFER_DAY_OF_MONTH": "first"},
+    )
+    return "" if not date else date.strftime("%d/%m/%Y")
