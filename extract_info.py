@@ -5,7 +5,6 @@ import os
 os.environ["TESSDATA_PREFIX"] = "./"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-from PIL import Image
 from transformers import pipeline
 
 answer_extractor = pipeline(
