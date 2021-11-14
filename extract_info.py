@@ -6,6 +6,8 @@ import numpy as np
 import urllib.request
 os.environ["TESSDATA_PREFIX"] = "./resources/"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+import json
+import time
 
 from transformers import pipeline
 import utils
@@ -24,7 +26,7 @@ template_questions = {
     "location": "Địa điểm rao bán?",
     "phone": "Số điện thoại người bán?",
 }
-print("Finish set-up")
+#print("Finish set-up")
 
 def url_to_image(url):
     with urllib.request.urlopen(url) as resp:
@@ -82,12 +84,22 @@ def extract_info_with_url(url: str):
     details = _extract_details(context)
     return details
 
-if __name__ == "__main__":
-    while True:
-        [report, url] = input().split(' ')
-        details = extract_info_with_url(url)
-        print({"report": report, "content": details})
+def modified():
+    [report, url] = open('input', 'r').read().strip().split(' ')
+    # print({"report": report, "content": url}, flush=True)
+    details = extract_info_with_url(url)
+    print({"report": report, "content": details}, flush=True)
 
+
+if __name__ == "__main__":
+    prev = 0
+    while True:
+        cur = os.stat('./input').st_mtime
+        if cur != prev:
+            modified()
+            prev=cur
+        time.sleep(2)
+   
     # For testing in development phase
     # import json
     # data_dir = "./data"
