@@ -83,9 +83,9 @@ def extract_info_with_url(url: str):
 
 if __name__ == "__main__":
     while True:
-        url = input()
+        [report, url] = input().split(' ')
         details = extract_info_with_url(url)
-        print(details)
+        print({"report": report, "content": details})
 
     # For testing in development phase
     # import json
