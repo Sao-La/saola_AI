@@ -1,13 +1,14 @@
 import difflib
+import pylcs
 from vncorenlp import VnCoreNLP
 
-segmenter = VnCoreNLP("./vncorenlp/VnCoreNLP-1.1.1.jar", annotators="wseg", max_heap_size='-Xmx500m') 
-words = [w.strip() for w in open("./vi-DauMoi.dic", "r")]
+segmenter = VnCoreNLP("./resources/vncorenlp/VnCoreNLP-1.1.1.jar", annotators="wseg", max_heap_size='-Xmx500m') 
+words = [w.strip().lower() for w in open("./resources/vi-DauMoi.dic", "r")]
+animal_names = [w.strip().lower() for w in open("./resources/vi-animals.txt", "r")]
 
 def correct(text: str, threshold: float = 0.8):
     def normalize(token: str):
         return "".join(e for e in token if e.isalnum()).lower()
-    
     def compute_dist(a, b):
         return difflib.SequenceMatcher(None, a, b).ratio()
     
@@ -29,3 +30,15 @@ def segment(text: str):
     for sent in segmenter.tokenize(text):
         res.append(" ".join(sent))
     return " \n ".join(res)
+
+def unsegment(text: str):
+    return " ".join(text.split("_"))
+
+def match_animal(text: str):
+    res = []
+    for x in animal_names:
+        match_len = pylcs.lcs2(text, x)
+        match_ratio = match_len / len(x)
+        res.append((match_ratio, x))
+    match_name = max(res)[1]
+    return match_name

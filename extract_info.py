@@ -2,7 +2,7 @@ import pytesseract
 import argparse
 import cv2
 import os
-os.environ["TESSDATA_PREFIX"] = "./"
+os.environ["TESSDATA_PREFIX"] = "./resources/"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 from transformers import pipeline
@@ -19,8 +19,8 @@ template_questions = {
     "usage": "Mục đích sử dụng?",
     "quantity": "Số lượng sản phẩm được rao bán?",
     "post_date": "Thời gian rao bán?",
-    "post_location": "Địa điểm rao bán?",
-    "contact": "Số điện thoại người bán?",
+    "location": "Địa điểm rao bán?",
+    "phone": "Số điện thoại người bán?",
 }
 print("Finish set-up")
 
@@ -28,8 +28,8 @@ def _extract_text(fpath: str):
     img = cv2.imread(fpath)
     img = cv2.resize(img, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
-    # gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    # gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+    gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
     text = pytesseract.image_to_string(gray, lang="vie")
     # correction
     lines = [utils.correct(x) for x in text.split("\n") if len(x.strip()) > 0]
@@ -41,7 +41,11 @@ def _extract_details(context: str):
     details = {}
     for qid, question in template_questions.items():
         outputs = answer_extractor(question=question, context=context)
-        details[qid] = {"answer": outputs["answer"].strip(), "score": outputs["score"]}
+        details[qid] = {"answer": utils.unsegment(outputs["answer"].strip()), "score": outputs["score"]}
+        if qid == "animal_name":
+            details[qid]["answer"] = utils.match_animal(details[qid]["answer"])
+        elif qid == "phone":
+            details[qid]["answer"] = utils.parse_phone(details[qid]["answer"])
     return details
 
 def extract_info(fpath: str):
@@ -51,6 +55,12 @@ def extract_info(fpath: str):
     return details
 
 if __name__ == "__main__":
+    """
+    while True:
+        fname = input("File name: ")
+        details = extract_info(fname)
+        print(details)
+    """
     # For testing in development phase
     import json
     data_dir = "./data"
