@@ -6,17 +6,20 @@ os.environ["TESSDATA_PREFIX"] = "./"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 from transformers import pipeline
-
+from vncorenlp import VnCoreNLP
+segmenter = VnCoreNLP("./vncorenlp/VnCoreNLP-1.1.1.jar", annotators="wseg", max_heap_size='-Xmx500m') 
 answer_extractor = pipeline(
     "question-answering", 
+    # model="nguyenvulebinh/vi-mrc-base",
     model="ancs21/xlm-roberta-large-vi-qa",
 )
 template_questions = {
-    "animal_name": "Tên động vật được rao bán?",
+    "animal_name": "Động vật nào được rao bán?",
     "product_name": "Sản phẩm được rao bán là gì?",
-    "quantity": "Bao nhiêu sản phẩm được rao bán?",
-    "post_date": "Bài đăng vào thời gian nào?",
-    "post_location": "Địa điểm tổ chức rao bán?",
+    "usage": "Mục đích sử dụng?",
+    "quantity": "Số lượng sản phẩm được rao bán?",
+    "post_date": "Thời gian rao bán?",
+    "post_location": "Địa điểm rao bán?",
     "contact": "Số điện thoại người bán?",
 }
 
@@ -29,8 +32,16 @@ def _extract_text(fpath):
     text = pytesseract.image_to_string(gray, lang='vie')
     return text
 
+def _segment(text):
+    global segmenter
+    res = ""
+    for sent in segmenter.tokenize(text):
+        res += " ".join(sent)
+    return res
+
 def _extract_details(context):
     global answer_extractor, template_questions
+    context = _segment(context)
     details = {}
     for qid, question in template_questions.items():
         outputs = answer_extractor(question=question, context=context)
