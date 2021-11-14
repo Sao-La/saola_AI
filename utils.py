@@ -1,5 +1,6 @@
 import difflib
 import pylcs
+import phonenumbers
 from vncorenlp import VnCoreNLP
 
 segmenter = VnCoreNLP("./resources/vncorenlp/VnCoreNLP-1.1.1.jar", annotators="wseg", max_heap_size='-Xmx500m') 
@@ -42,3 +43,9 @@ def match_animal(text: str):
         res.append((match_ratio, x))
     match_name = max(res)[1]
     return match_name
+
+def parse_phone(text: str):
+    res = []
+    for match in phonenumbers.PhoneNumberMatcher(text, "VN"):
+        res.append(phonenumbers.format_number(match.number, phonenumbers.PhoneNumberFormat.E164))
+    return res

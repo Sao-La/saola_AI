@@ -3,3 +3,4 @@ opencv-python==4.5.4.58
 transformers==4.11.3
 vncorenlp
 pylcs
+phonenumbers
