@@ -58,6 +58,8 @@ def _extract_text(fpath: str):
 def _extract_details(context: str):
     global answer_extractor, template_questions
     context = utils.segment(context)
+    if context == '':
+        return {}
     details = {}
     for qid, question in template_questions.items():
         outputs = answer_extractor(question=question, context=context)
